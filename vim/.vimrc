@@ -1,4 +1,3 @@
-filetype plugin indent on
 set foldcolumn=3
 " 在窗口里开始编辑一个缓冲区时设置 'foldlevel'。用于开始编辑时总是关闭所有的折叠 (值为零)，关闭某些折叠 (1) 或者没有折叠 (99)。
 set foldlevelstart=99
@@ -17,9 +16,11 @@ set noexpandtab
 set autoread
 
  
+let g:solarized_termcolors=256
+set t_Co=256
 " 语法高亮
 syntax on
 syntax enable
 set background=dark
-"colorscheme solarized
-colorscheme lucius
+colorscheme solarized
+"colorscheme lucius
