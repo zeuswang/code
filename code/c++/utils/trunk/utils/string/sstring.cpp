@@ -109,4 +109,19 @@ int Split2List( const std::string& src,
 
 }
 
+int StringSplit(char chr,char * src,uint32_t dstlimit,char ** dstlist,uint32_t * dstnum)
+{
+	char * ptab;
+	ptab = src;
+	*dstnum = 0;
+	if(*ptab != 0)
+		dstlist[(*dstnum)++] = ptab;
+	ptab = strchr(ptab,chr);
+	while(ptab != NULL && *dstnum < dstlimit){
+		*ptab++ = '\0';
+		dstlist[(*dstnum)++] = ptab;
+		ptab=strchr(ptab,chr);
+	}
+	return 0;
+}
 }
