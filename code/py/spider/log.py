@@ -1,0 +1,9 @@
+import time
+def time_info():
+	return time.strftime('%Y-%m-%d:%H:%M:%S',time.localtime(time.time()))
+def error_log(res):
+	print "[ERROR][",time_info(),"]",res
+def debug_log(res):
+	print "[DEBUG][",time_info(),"]",res
+def info_log(res):
+	print "[INFO][",time_info(),"]",res
