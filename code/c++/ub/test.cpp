@@ -9,15 +9,18 @@ public:
         std::string head(buf,len);
         printf("headeris=%s,len=%d",head.c_str(),len);
         return 0;
-    }
+    };
     int read_done(char * buf,int hlen,int blen)
     {
         std::string head(buf,hlen);
         std::string body(buf+hlen,blen - hlen);
         printf("headeris=%s\n",head.c_str());
         printf("body=%s\n",body.c_str());
+        finish();
 
-    }
+    };
+
+    int write_done(){return 0;};
 
 };
 
@@ -49,9 +52,9 @@ int main()
             }
 
 
-        }
-
     }
+
+
 
 
 while(1)

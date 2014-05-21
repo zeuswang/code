@@ -1,9 +1,4 @@
-/***************************************************************************
- * 
- * Copyright (c) 2009 Baidu.com, Inc. All Rights Reserved
- * 
- **************************************************************************/
- 
+
  
  
 /**
@@ -14,7 +9,7 @@
  *  
  **/
 #include "HttpEvent.h"
-#include "event_log.h"
+
 namespace ub {
 
 static const char G_HTTP_CRLF[] = "\r\n"; /**<   \r\n     */

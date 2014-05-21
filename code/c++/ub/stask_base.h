@@ -174,7 +174,7 @@ int STaskBase<T>::Activate()
 	return 0;
 }
 template<typename T>
-int STaskBase<T>::IsStop()
+bool STaskBase<T>::IsStop()
 {
 	//fprintf(stderr,"Stop ret = -1\n");
 	

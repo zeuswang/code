@@ -1,5 +1,12 @@
 #ifndef _UB_EVENT_H_
 #define _UB_EVENT_H_
+#include "ievent.h"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <pthread.h>
+#include "common.h"
+#include "reactor.h"
+
 namespace ub
 {
 #define FOR_HEAD 0
@@ -7,8 +14,8 @@ namespace ub
 static const int g_SMALLBUFSIZE = 256;
 
 typedef struct _ub_socket_t {		  /**<    socket相关数据    */
-	UbEvent * event;		  /**<   event     */
-	IReactor * first_reactor;		  /**<   reactor     */
+	// UbEvent * event;		  /**<   event     */
+	//IReactor * first_reactor;		  /**<   reactor     */
 	unsigned int max_buffer_size;		  /**<   最大内存     */
 	unsigned int max_readbuf_size;		  /**<   最大读内存     */
 	unsigned int max_writebuf_size;		  /**<   最大写内存     */
@@ -31,11 +38,12 @@ typedef struct _ub_socket_t {		  /**<    socket相关数据    */
 	int connect_type;		  /**<   连接类型：长短连接     */
 	int connect_timeout;   /**<  连接超时ms      */
 	int process_timeout;   /**<  连接上以后的session处理超时ms      */
-	ub_timecount_t timer;		  /**<   计时器     */
+	//ub_timecount_t timer;		  /**<   计时器     */
 	struct sockaddr_in client_addr;		  /**<   连接地址     */
 	unsigned int status;		  /**<   event状态     */
 	int sock_opt;	  /**<   socket选项     */
 } ub_socket_t; /**<    socket相关数据    */
+
 
 class UbEvent :public IEvent
 {
@@ -56,7 +64,7 @@ public:
 	};
     UbEvent():_fheader_length(0), _fbody_length(0), _fbody_readdone(0),_io_status(0){
         _ref=0;
-        sock_data.event = this;
+        //sock_data.event = this;
         sock_data.read_buf = sock_data.small_readbuf;
         sock_data.read_buf_len = sizeof(sock_data.small_readbuf);
         sock_data.read_buf_used = 0;
@@ -68,7 +76,7 @@ public:
         //sock_data.sock_opt = 0;
         //sock_data.status = 0;
         //mgr_ =NULL;
-        pthread_mutex_init(&_mutex);
+        pthread_mutex_init(&_mutex,NULL);
         gettimeofday(&_start_time, NULL);
 
     };
@@ -89,37 +97,38 @@ public:
 
     virtual int write_done(){return 0;};
     virtual void error_handle();
-    bool need_continue();
 
 public:
     
     int _fheader_length;   /**<  header length      */
     int _fbody_length;		  /**<  http body length(Content-Length)      */
     int _fbody_readdone;		  /**<   http body read     */
+	int read_func();
+	int write_func();
 
 
-    virtual int handle() { return _handle; }
+    virtual int handle() { return _handle; };
     virtual void setHandle(int hd){_handle = hd;};
-    virtual int events() { return _events; }
-    virtual void setEvents(int ev) { _events = ev; }
-    virtual int status () { return _status;}
-    virtual void setStatus(int s) { _status = s; }
-    virtual int type() { return _type; }
-    virtual void setType(int t) { _type = t; }
+    virtual int events() { return _events; };
+    virtual void setEvents(int ev) { _events = ev; };
+    virtual int status () { return _status;};
+    virtual void setStatus(int s) { _status = s; };
+    virtual int type() { return _type; };
+    virtual void setType(int t) { _type = t; };
 
     virtual bool release();
     
-    virtual int clear() { return 0; }
-    virtual IEvent * next() { return _next; }
-    virtual void setNext(IEvent *ev) { _next = ev; }
-    virtual IEvent *previous() { return _pre; }
-    virtual void setPrevious(IEvent *ev) { _pre = ev; }
+    virtual int clear() { return 0; };
+    virtual IEvent * next() { return _next; };
+    virtual void setNext(IEvent *ev) { _next = ev; };
+    virtual IEvent *previous() { return _pre; };
+    virtual void setPrevious(IEvent *ev) { _pre = ev; };
     
     virtual bool isTimeout() ;
     virtual void setTimeout_ms(int tv);
 
-    NetReactor *reactor() { return _reactor; }
-    void setReactor(NetReactor *r) { _reactor = r; }
+    NetReactor *reactor() { return _reactor; };
+    void setReactor(NetReactor *r) { _reactor = r; };
 
     int addRef();
     int delRef();
@@ -142,12 +151,6 @@ protected:
     IEvent *_pre;
     IEvent *_next;
 
-    
-    /*virtual void setCallback(cb_t cb, void *p){
-        callback_ = cb;
-        user_params_ = p;
-
-    };*/
     int read_buffer_process(int len);
     void * ub_event_malloc(size_t size);
     void ub_event_free(void * mem,size_t msize);

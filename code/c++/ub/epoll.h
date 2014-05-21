@@ -21,8 +21,6 @@
 
 #include <stdint.h>
 #include <sys/types.h>
-
-
 enum EPOLL_EVENTS
   {
     EPOLLIN = 0x001,
@@ -50,7 +48,7 @@ enum EPOLL_EVENTS
     EPOLLET = (1 << 31)
 #define EPOLLET EPOLLET
 
-  };
+};
 
 
 /* Valid opcodes ( "op" parameter ) to issue to epoll_ctl().  */
@@ -84,7 +82,7 @@ struct epoll_event
   epoll_data_t data;	/* User data variable */
 } EPOLL_PACKED;
 
-
+#if 1
 __BEGIN_DECLS
 
 /* Creates an epoll instance.  Returns an fd for the new instance.
@@ -115,5 +113,5 @@ extern int epoll_wait (int __epfd, struct epoll_event *__events,
 		       int __maxevents, int __timeout) __THROW;
 
 __END_DECLS
-
+#endif
 #endif /* sys/epoll.h */

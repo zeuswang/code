@@ -1,10 +1,3 @@
-/***************************************************************************
- * 
- * Copyright (c) 2009 Baidu.com, Inc. All Rights Reserved
- * 
- **************************************************************************/
- 
- 
  
 /**
  * @file treactor.h
@@ -17,22 +10,15 @@
 
 #ifndef  __UB_NETREACTOR_H_
 #define  __UB_NETREACTOR_H_
-#include "bsl/list.h"
-#include "bsl/map.h"
-#include "ubtask.h"
-#include "ubutils.h"
-#include "ubatomic.h"
-#include "ublock.h"
-#include "eventtools.h"
-#include "ubtimer.h"
-
+#include "common.h"
+#include "ievent.h"
 namespace ub
 {
 class NetReactor;
 class EPollEx
 {
 	public:
-		EPollEx(IReactor *r);
+		EPollEx();
 		~EPollEx();
 		/**
 		 * @brief ´´½¨epoll

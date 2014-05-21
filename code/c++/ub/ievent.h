@@ -1,44 +1,31 @@
-/***************************************************************************
- *
- * Copyright (c) 2009 Baidu.com, Inc. All Rights Reserved
- *
- **************************************************************************/
-
-
-
 /**
  * @file ievent.h
- * @author xiaowei(com@baidu.com)
- * @date 2009/04/27 13:02:26
+ * @author wangwei115120@sogou-inc.com
+ * @date 2014/04/27 
  * @brief
  *
  **/
-
+#include "reactor.h"
 
 #ifndef  __UB_IEVENT_H_
 #define  __UB_IEVENT_H_
-
+/*
 #include <new>
 
 #include "ubinlog.h"
 #include "ubutils.h"
 #include "bsl/pool.h"
-
+*/
 namespace ub
 {
-	class IReactor;
-	class IEvent;
-	//typedef unsigned long long ev_id;
-
-	//事件的统一接口
+	class NetReactor;
 	class IEvent
 	{
 		public:
 			enum {
 				INIT,//初始化状态
 				READY,//等待状态
-				INPOOL,//在等待轮训
-				DOING,//正在被处理
+				CONTINUE,//正在被处理
 				DONE,//处理完毕
 				/*CANCELED,*///被取消
 			};
@@ -58,7 +45,7 @@ namespace ub
 			};
 
 			//事件回调函数的类型
-			typedef void (*cb_t)(IEvent *, void *);
+			//typedef void (*cb_t)(IEvent *, void *);
 		public:
 
 
@@ -92,7 +79,7 @@ namespace ub
 			 * @author xiaowei
 			 * @date 2009/06/10 13:19:03
 			**/
-			virtual IReactor *reactor() = 0;
+			virtual NetReactor *reactor() = 0;
 			/**
 			 * @brief 设置监控这个事件的reactor
 			 *
@@ -102,7 +89,7 @@ namespace ub
 			 * @author xiaowei
 			 * @date 2009/06/10 13:19:15
 			**/
-			virtual void setReactor(IReactor *) = 0;
+			virtual void setReactor(NetReactor *) = 0;
 
 			/**
 			 * @brief reactor激活事件后的回调
@@ -125,10 +112,10 @@ namespace ub
 			 * @author xiaowei
 			 * @date 2009/06/10 13:19:40
 			**/
-			virtual void setCallback(cb_t cb, void *p) = 0;
+			//virtual void setCallback(cb_t cb, void *p) = 0;
 
 			//TODO
-			virtual int getCallback(cb_t *pcb, void ** pprm)=0;
+			//virtual int getCallback(cb_t *pcb, void ** pprm)=0;
 
 			virtual bool isTimeout() = 0;
 			virtual void setTimeout_ms(int tv) = 0;
@@ -152,7 +139,7 @@ namespace ub
 			 * @author xiaowei
 			 * @date 2009/06/10 13:21:38
 			**/
-			virtual int result() = 0;
+			virtual int events() = 0;
 
 			/**
 			 * @brief 设置事件激活原因
@@ -163,7 +150,7 @@ namespace ub
 			 * @author xiaowei
 			 * @date 2009/06/10 13:22:35
 			**/
-			virtual void setResult(int) = 0;
+			virtual void setEvents(int) = 0;
 
 			/**
 			 * @brief 返回事件的类型
@@ -258,7 +245,7 @@ namespace ub
 			 * @author xiaowei
 			 * @date 2009/06/10 13:24:40
 			**/
-			virtual bsl::mempool * pool() { return NULL; }
+			//virtual bsl::mempool * pool() { return NULL; }
 
 			/**
 			 * @brief 返回事件的下一个指针

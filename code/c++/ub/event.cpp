@@ -1,7 +1,11 @@
 #include "event.h"
+#include "ievent.h"
+#include <unistd.h>
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 namespace ub
 {
-
 
 int UbEvent::addRef()
 {
@@ -69,36 +73,24 @@ int UbEvent :: post()
 
 void UbEvent::callback()
 {
-/*
-     TIMEOUT = 1UL,  //超时事件
-    IOREADABLE = 1UL<<1UL,  //io可读事件
-    IOWRITEABLE = 1UL<<2UL, //io可写事件
-    SIGNAL = 1UL<<3UL,  //系统信号事件
-    CLOSESOCK = 1UL<<4UL,   //对端关闭句柄
-    ERROR = 1UL<<5UL,   //未知错误
-    CPUEVENT = 1UL<<6UL,    //cpu事件
-    CANCELED = 1UL<<7UL,    //事件被取消
-    SOCKERROR = 1UL<<8UL,   //socket上发生错误事件*/
+    int stat = status();
+    int event = events();
 
-
-    int status = status();
-    int events = events();
-
-    if (status == IEvent::ERROR )
+    if (stat == IEvent::ERROR )
     {
         goto ERROR;
     }
 
-    if (events & IEvent::IOREADABLE)
+    if (event & IEvent::IOREADABLE)
     {
 
-        if ( read() <0)
+        if ( read_func() <0)
             goto ERROR;
 
     }
-    if (events & IEvent::IOWRITEABLE)
+    if (event & IEvent::IOWRITEABLE)
     {
-        if (write() <0)
+        if (write_func() <0)
             goto ERROR;
     }
 
@@ -115,7 +107,6 @@ void UbEvent::callback()
 ERROR:
     _err("UbEvent::callback() : post error\n");
     event_error_callback();
-
 
 }
 
@@ -260,14 +251,13 @@ int UbEvent :: read_buffer_process(int len)
         _fbody_readdone = sock_data.read_buf_used - _fheader_length;
     
         if (_fbody_readdone >= _fbody_length) {
-            read_done(HttpEvent);
+            read_done(sock_data.read_buf,_fbody_length);
         }
     }
 
     return 0;
 }
-
-int UbEvent :: read()
+int UbEvent::read_func()
 {
 
     //ret = ::read(this->handle(), ((char *)(_buf)) + _readcnt, _cnt - _readcnt);
@@ -292,7 +282,7 @@ int UbEvent :: read()
     return -1;
 }
 
-int UbEvent::write(char * buf,int len)
+int UbEvent::write_func()
 {
     char* _buf = sock_data.write_buf + sock_data.write_buf_used;
     unsigned int len = sock_data.write_buf_len - sock_data.write_buf_used;
@@ -314,7 +304,7 @@ int UbEvent::write(char * buf,int len)
     return -1;
 }
 
-void UbEvent :: release_read_buf() {
+void UbEvent::release_read_buf() {
 	if ((sock_data.small_readbuf != sock_data.read_buf) && (NULL != sock_data.read_buf)){
 		ub_event_free(sock_data.read_buf, sock_data.read_buf_len);
 	}
@@ -322,7 +312,7 @@ void UbEvent :: release_read_buf() {
 	sock_data.read_buf_len = sizeof(sock_data.small_readbuf);
 	sock_data.read_buf_used = 0;
 }
-void UbEvent :: release_write_buf() {
+void UbEvent::release_write_buf() {
 	if ((sock_data.small_writebuf != sock_data.write_buf) && (NULL != sock_data.write_buf)) {
 		ub_event_free(sock_data.write_buf, sock_data.write_buf_len);
 	}
@@ -347,7 +337,7 @@ bool UbEvent::release()
 		return false;
 	}
 }
-void UbEvent :: event_error_callback() 
+void UbEvent::event_error_callback() 
 {
     error_handle();
     _err("now in the UbEvent::event_error_callback(), close sockfd\n");
@@ -358,7 +348,7 @@ void UbEvent :: event_error_callback()
 	
 }
 
-UbEvent :: ~UbEvent() {
+UbEvent::~UbEvent() {
     release_read_buf();
     release_write_buf();
     if (0 <= handle()) {

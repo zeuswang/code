@@ -1,28 +1,16 @@
-/***************************************************************************
- * 
- * Copyright (c) 2009 Baidu.com, Inc. All Rights Reserved
- * netreactor.cpp 2009/05/25 12:34:04 xiaowei Exp 
- * 
- **************************************************************************/
- 
  
  
 /**
  * @file netreactor.cpp
- * @author xiaowei(com@baidu.com)
+ * @author wangwei115120@sogou-inc.com
  * @date 2009/05/25 12:34:04
  * @brief 
  *  
  **/
 
-#ifdef __i386
-#include "../ub_server/epoll.h"
-#else
-#include <sys/epoll.h>
-#endif
+#include "epoll.h"
 #include "netreactor.h"
 #include "ievent.h"
-#include "../common/utils.h"
 
 namespace ub
 {
