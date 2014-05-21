@@ -22,6 +22,16 @@ int UbEvent::delRef()
     return ret;
 }
 
+int UbEvent::getRefCnt()
+{
+
+    int ret=0;
+    pthread_mutex_lock(&_mutex);
+    ret =_ref;
+    pthread_mutex_unlock(&_mutex);
+    return ret;
+
+}
 
 bool UbEvent::isTimeout() 
 {
@@ -39,11 +49,14 @@ void UbEvent::setTimeout_ms(int tv)
     _tv =tv; 
 }
 
-
+void UbEvent::finish()
+{
+    setStatus(IEvent::DONE);
+}
 int UbEvent :: post() 
 {
     int ret=0;
-    IReactor * r = reactor();
+    NetReactor * r = reactor();
     if (NULL != r) {
         ret = r->post(this);
     } else {
@@ -69,9 +82,13 @@ void UbEvent::callback()
 
 
     int status = status();
-    int events = result();
+    int events = events();
 
-    int ret =0;
+    if (status == IEvent::ERROR )
+    {
+        goto ERROR;
+    }
+
     if (events & IEvent::IOREADABLE)
     {
 
@@ -81,18 +98,13 @@ void UbEvent::callback()
     }
     if (events & IEvent::IOWRITEABLE)
     {
-            /*if (0 != ev->awrite()) {
-            ev->set_sock_status(ev->STATUS_ERROR);
-            ev->session_done();
-        }*/
-
         if (write() <0)
             goto ERROR;
     }
 
-    if (need_continue())
+    if (status() == IEvent::READY )
     {
-        if ( 0 != rand_repost())
+        if ( 0 != post())
         {
             goto ERROR;
         }
@@ -101,10 +113,8 @@ void UbEvent::callback()
     return ;
     
 ERROR:
-    _err("HttpEvent(ubhttp_main_callback) : repost error\n");
+    _err("UbEvent::callback() : post error\n");
     event_error_callback();
-
-
 
 
 }
@@ -135,13 +145,6 @@ void UbEvent::ub_event_free(void * mem, size_t msize) {
 	free(mem);
 }
 
-bool UbEvent::need_continue()
-{
-
-
-
-
-}
 
 const char * UbEvent :: get_read_buffer(unsigned int size, int copy) {
 	char * retbuf = NULL;
@@ -184,8 +187,8 @@ const char * UbEvent :: get_read_buffer(unsigned int size, int copy) {
 END:
 	if (NULL != retbuf) {
 	} else {
-		setResult(IEvent::ERROR);
-		set_sock_status(UbEvent::STATUS_READ | UbEvent::STATUS_MEMERROR);
+		setEvents(IEvent::ERROR);
+		//set_sock_status(UbEvent::STATUS_READ | UbEvent::STATUS_MEMERROR);
 	}
 	return retbuf;
 }
@@ -217,8 +220,8 @@ END:
 	if (NULL != retbuf) {
 		sock_data.write_buf_used = size;
 	} else {
-		setResult(IEvent::ERROR);
-		set_sock_status(UbEvent::STATUS_WRITE | UbEvent::STATUS_MEMERROR);
+		setEvents(IEvent::ERROR);
+		//set_sock_status(UbEvent::STATUS_WRITE | UbEvent::STATUS_MEMERROR);
 	}
 	return retbuf;
 }
@@ -285,14 +288,14 @@ int UbEvent :: read()
         return 0;
     }*/
 
-    setEvents(ERROR);
+    setEvents(IEvent::ERROR);
     return -1;
 }
 
 int UbEvent::write(char * buf,int len)
 {
     char* _buf = sock_data.write_buf + sock_data.write_buf_used;
-    unsigned int len = sock_data.read_buf_len - sock_data.read_buf_used;
+    unsigned int len = sock_data.write_buf_len - sock_data.write_buf_used;
 
     //ret = ::write(this->handle(), ((char *)(_buf)) + _readcnt, _cnt - _readcnt);
     int ret = ::send(this->handle(), _buf, len, MSG_DONTWAIT);
@@ -307,7 +310,7 @@ int UbEvent::write(char * buf,int len)
         return 0;
     }
     
-    setResult(ERROR);
+    setEvents(IEvent::ERROR);
     return -1;
 }
 

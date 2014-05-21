@@ -76,6 +76,7 @@ public:
 
 public:
     int post();
+    void finish();
     char* get_write_buffer(unsigned int size);
     void event_error_callback();
     void callback();
@@ -117,11 +118,12 @@ public:
     virtual bool isTimeout() ;
     virtual void setTimeout_ms(int tv);
 
-    IReactor *reactor() { return _reactor; }
-    void setReactor(IReactor *r) { _reactor = r; }
+    NetReactor *reactor() { return _reactor; }
+    void setReactor(NetReactor *r) { _reactor = r; }
 
     int addRef();
     int delRef();
+    int getRefCnt();
 
 protected:
 
@@ -135,7 +137,7 @@ protected:
     int _events;
     int _status;
 
-    IReactor *_reactor;
+    NetReactor *_reactor;
     
     IEvent *_pre;
     IEvent *_next;
@@ -157,7 +159,7 @@ protected:
     ub_socket_t sock_data;
     int _io_status;
     void * user_params_;
-    cb_t  callback_;
+    //cb_t  callback_;
     //bsl::mempool * mgr_;
 };
 
