@@ -1,5 +1,9 @@
 #include "httpevent.h"
-
+#include <string.h>
+#include <string>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 class clienthttpevent:public ub::HttpEvent
 {
@@ -29,7 +33,7 @@ int main()
 
 
 {
-    ub::NetReactor reactor = new ub::NetReactor;
+    ub::NetReactor* reactor = new ub::NetReactor();
     clienthttpevent * httpEvent = new clienthttpevent();
     char *reqbuf = (char *)httpEvent->get_write_buffer(1000);
     int ret = snprintf(reqbuf, 1000, "%s", "GET / \n");

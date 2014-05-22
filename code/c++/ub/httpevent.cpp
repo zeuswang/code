@@ -8,7 +8,9 @@
  * @brief 
  *  
  **/
-#include "HttpEvent.h"
+#include "httpevent.h"
+#include <string.h>
+#include <errno.h>
 
 namespace ub {
 
@@ -86,7 +88,7 @@ int HttpEvent::check_header(char * buf,int len)
     return -1;
 }
 
-int HttpEvent :: http_find_crlfcrlf(char * buf,int len) {
+int HttpEvent::http_find_crlfcrlf(char * buf,int len) {
 	int length = len -3;
 	if (0 > len) {
 		length = 0;
@@ -100,7 +102,7 @@ int HttpEvent :: http_find_crlfcrlf(char * buf,int len) {
 	}
 	return -1;
 }
-int  HttpEvent :: get_content_length(char * buf,int len) {
+int  HttpEvent::get_content_length(char * buf,int len) {
 //	char * ctl = strstr(sock_data.read_buf, G_HTTP_CONTENTLEN);http_find_field_nocase
 //	if (NULL == ctl) {
 //		UBEVENT_TRACE(this,"HttpEvent(http_get_contentlength): no Content-Length field.");
@@ -143,14 +145,14 @@ NOLENGTH:
 
 
 
-int HttpEvent :: get_headlen() {
+int HttpEvent::get_headlen() {
 	return _fheader_length;
 }
-int HttpEvent :: get_bodylen() {
+int HttpEvent::get_bodylen() {
 	return _fbody_length;
 }
 
-int HttpEvent :: is_finished() {
+int HttpEvent::is_finished() {
 	return _fbody_readdone >= _fbody_length;
 }
 

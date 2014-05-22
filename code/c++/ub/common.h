@@ -2,7 +2,6 @@
 #define _COMMON_H_
 #include <time.h>
 #include <sys/time.h>
-#include "ievent.h"
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -200,31 +199,29 @@ inline const timeval tvMs2Tv(int ms)
 inline const int tvTv2Ms(const timeval &tv)
 {
     return tv.tv_sec * 1000 + tv.tv_usec / 1000;
-}
+};
 
 class MLock
 {
-    public:
-        inline MLock() {
-            pthread_mutex_init(&_lock, NULL);
-        }
-        inline ~MLock() {
-            pthread_mutex_destroy(&_lock);
-        }
-        inline int lock() {
-            return pthread_mutex_lock(&_lock);
-        }
-        inline int unlock() {
-            return pthread_mutex_unlock(&_lock);
-        }
-        inline int trylock() {
-            return pthread_mutex_trylock(&_lock);
-        }
+public:
+	inline MLock() {
+    	pthread_mutex_init(&_lock, NULL);
+	};
+    inline ~MLock() {
+    	pthread_mutex_destroy(&_lock);
+	};
+    inline int lock() {
+    	return pthread_mutex_lock(&_lock);
+    };
+    inline int unlock() {
+    	return pthread_mutex_unlock(&_lock);
+	};
+    inline int trylock() {
+    	return pthread_mutex_trylock(&_lock);
+    };
 
-    private:
-        pthread_mutex_t _lock;
-
-        friend class MCondition;
+private:
+    pthread_mutex_t _lock;
 };
 
 class SpinLock
@@ -263,176 +260,8 @@ class AutoLock
 	private:
 		Lock &_lock;
 };
-
-//根据事件指针组织的事件队列管理器
-class EQueue
-{
-	public:
-		EQueue() : _begin(0), _end(0) {}
-		~EQueue() {}
-		/**
-		 * @brief 清空事件队列
-		 *
-		 * @return  void 
-		 * @retval   
-		 * @see 
-		 * @author xiaowei
-		 * @date 2009/06/10 16:25:57
-		**/
-		inline void clear() { _begin = _end = 0; }
-		/**
-		 * @brief 判断队列是否为空
-		 *
-		 * @return  bool 
-		 * @retval   
-		 * @see 
-		 * @author xiaowei
-		 * @date 2009/06/10 16:26:06
-		**/
-		inline bool empty() { return _begin == NULL; }
-		//保证一个线程push，一个线程遍历线程安全
-		/**
-		 * @brief 将事件放到事件队列中去
-		 *
-		 * @param [in/out] ev   : IEvent*
-		 * @return  void 
-		 * @retval   
-		 * @see 
-		 * @author xiaowei
-		 * @date 2009/06/10 16:26:15
-		**/
-		void push(IEvent *ev);
-		/**
-		 * @brief 弹出开头的事件队列
-		 *
-		 * @return  IEvent* 
-		 * @retval   
-		 * @see 
-		 * @author xiaowei
-		 * @date 2009/06/10 16:26:27
-		**/
-		IEvent *pop();
-		/**
-		 * @brief 返回队列头
-		 *
-		 * @return  IEvent* 
-		 * @retval   
-		 * @see 
-		 * @author xiaowei
-		 * @date 2009/06/10 16:26:41
-		**/
-		inline IEvent *begin() { return _begin; }
-		/**
-		 * @brief 删除事件
-		 *
-		 * @param [in/out] ev   : IEvent*
-		 * @return  void 
-		 * @retval   
-		 * @see 
-		 * @author xiaowei
-		 * @date 2009/06/10 16:26:54
-		**/
-		void erase(IEvent *ev);
-	public:
-		IEvent *_begin;
-		IEvent *_end;
-};
-
 typedef AutoLock<SpinLock> AutoSLock;
 typedef AutoLock<MLock> AutoMLock;
-
-//线程安全的分装
-class ELQueue
-{
-    public:
-        /**
-         * @brief 清空事件队列
-         *
-         * @return  void 
-         * @retval   
-         * @see 
-         * @author xiaowei
-         * @date 2009/06/10 16:25:57
-        **/
-        inline void clear() {
-            AutoSLock __l(_lock);
-            _queue.clear();
-        }
-        /**
-         * @brief 判断队列是否为空
-         *
-         * @return  bool 
-         * @retval   
-         * @see 
-         * @author xiaowei
-         * @date 2009/06/10 16:26:06
-        **/
-        inline bool empty() {
-            return _queue.empty();
-        }
-        //保证一个线程push，一个线程遍历线程安全
-        /**
-         * @brief 将事件放到事件队列中去
-         *
-         * @param [in/out] ev   : IEvent*
-         * @return  void 
-         * @retval   
-         * @see 
-         * @author xiaowei
-         * @date 2009/06/10 16:26:15
-        **/
-        inline void push(IEvent *ev) {
-            AutoSLock __l(_lock);
-            _queue.push(ev);
-        }
-
-        /**
-         * @brief 将事件弹出
-         *
-         * @param [in/out] ev   : IEvent*
-         * @return  void 
-         * @retval   
-         * @see 
-         * @author xiaowei
-         * @date 2009/06/10 16:26:15
-        **/
-        inline IEvent * pop() {
-            AutoSLock __l(_lock);
-            return _queue.pop();
-        }
-        /**
-         * @brief 返回队列头
-         *
-         * @return  IEvent* 
-         * @retval   
-         * @see 
-         * @author xiaowei
-         * @date 2009/06/10 16:26:41
-        **/
-        inline IEvent *begin() {
-            AutoSLock __l(_lock);
-            return _queue.begin();
-        }
-        /**
-         * @brief 删除事件
-         *
-         * @param [in/out] ev   : IEvent*
-         * @return  void 
-         * @retval   
-         * @see 
-         * @author xiaowei
-         * @date 2009/06/10 16:26:54
-        **/
-        inline void erase(IEvent *ev) {
-            AutoSLock __l(_lock);
-            _queue.erase(ev);
-        }
-
-    private:
-        SpinLock _lock;
-        EQueue _queue;
-};
-
 
 
 

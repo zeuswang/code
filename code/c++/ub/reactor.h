@@ -3,9 +3,10 @@
 
 #include "common.h"
 #include "stask_base.h"
+#include "ievent.h"
+#include "epoll.h"
 namespace ub
 {
-
 
 class EPollEx
 {
@@ -92,7 +93,7 @@ private:
     int _waito;
     struct epoll_event *_evs;
     pthread_t _selfid;
-    MLock  _lock1;
+	MLock _lock1;
 #ifdef UB_EPOLL_USESELF_TIMEOUT
     ELQueue _elq;
 #endif

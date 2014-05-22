@@ -1,11 +1,3 @@
-/***************************************************************************
- * 
- * Copyright (c) 2009 Baidu.com, Inc. All Rights Reserved
- * 
- **************************************************************************/
- 
- 
- 
 /**
  * @file HttpEvent.h
  * @author wangwei115120@sogou-inc.com
@@ -18,14 +10,14 @@
 #ifndef HTTPEVENT_H_
 #define HTTPEVENT_H_
 
-#include <ub/ubevent.h>
-#include "UbSockEvent.h"
+#include "event.h"
 
 namespace ub {
 
 
 
-class HttpEvent : public UbEvent {
+class HttpEvent : public UbEvent 
+{
 
 public:
     virtual int check_header(char * buf,int len);
@@ -41,11 +33,11 @@ public:
 
 protected :
 
-    int http_find_crlfcrlf(int rdlen); 
-    int get_content_length();
+    int http_find_crlfcrlf(char *,int); 
+    int get_content_length(char * ,int);
 };
 
-} // namespace ub
+}; // namespace ub
 
 
 
