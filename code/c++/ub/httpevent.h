@@ -20,11 +20,13 @@ class HttpEvent : public UbEvent
 {
 
 public:
-    virtual int check_header(char * buf,int len);
+    virtual int get_head_length(char * buf,int len);
+    virtual int get_body_length(char * buf,int len);
 
-    virtual int read_head_done(char * buf,int len)=0;
-    virtual int read_done(char * buf,int head_len,int body_len)=0;
-    virtual int write_done()=0;
+    virtual int read_head_done(char * buf,int len){};
+    virtual int read_done(char * buf,int head_len,int body_len){};
+    virtual int write_done(){};
+    virtual void error_handle(){};
 
     int get_headlen();
     int get_bodylen();

@@ -29,6 +29,7 @@ typedef struct _ub_socket_t {		  /**<    socket相关数据    */
 	int write_timeout;		  /**<  写超时ms      */
 	unsigned int write_buf_len;     /**<   写缓冲区总长度     */
 	unsigned int write_buf_used;     /**<   已写的数据长度     */
+	unsigned int write_buf_done;     /**<   已写的数据长度     */
 //	struct {
 		int ext_readbuf; /**<   使用外部读缓冲     */
 		int ext_writebuf; /**<   使用外部写缓冲     */
@@ -64,6 +65,7 @@ public:
 	};
     UbEvent():_fheader_length(0), _fbody_length(0), _fbody_readdone(0),_io_status(0){
         _ref=0;
+		setType(IEvent::IOREADABLE);
         //sock_data.event = this;
         sock_data.read_buf = sock_data.small_readbuf;
         sock_data.read_buf_len = sizeof(sock_data.small_readbuf);
@@ -71,6 +73,7 @@ public:
         sock_data.write_buf = sock_data.small_writebuf;
         sock_data.write_buf_len = sizeof(sock_data.small_writebuf);
         sock_data.write_buf_used = 0;
+        sock_data.write_buf_done = 0;
         sock_data.max_writebuf_size = 10*1024*1024;
         sock_data.max_readbuf_size = 10*1024*1024;
         //sock_data.sock_opt = 0;
@@ -91,12 +94,14 @@ public:
 
 public:
     // need to inherit by subclass
-    virtual int check_header(char * buf,int  len){return 0;};
+    virtual int get_head_length(char * buf,int  len){return 0;};
+    virtual int get_body_length(char * buf,int  len){return 0;};
 
-    virtual int read_done(char * buf,int len){return 0;};
+    virtual int read_head_done(char * buf,int len,int len2){return 0;};
+    virtual int read_done(char * buf,int len,int len2){return 0;};
 
     virtual int write_done(){return 0;};
-    virtual void error_handle();
+    virtual void error_handle(){};
 
 public:
     

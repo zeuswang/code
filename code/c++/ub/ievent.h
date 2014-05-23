@@ -294,7 +294,7 @@ namespace ub
 
 			virtual ~IEvent() {}
 
-			virtual bool isError();
+			virtual bool isError(){return false;};
 
 	};
 

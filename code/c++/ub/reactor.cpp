@@ -461,6 +461,7 @@ EPollEx *NetReactor::getPoll(int pos)
 
 int NetReactor::post(IEvent *ev)
 {
+	_debug("xxxxxxx\n");
 	if (ev == NULL) {
 		_err("Calling NetReactor::post(event, type) failed, beacause the param event == NULL\n");
 		return -1;
@@ -487,12 +488,16 @@ int NetReactor::post(IEvent *ev)
     for (int i= index; i<m_thread_num; ++i) {
         EPollEx *poll = getPoll(i);
         if (poll && poll->add(ev, NetReactor::NET) == 0) {
+
+
+      _info(" post ok\n");
             return 0;
         }
     }
 	for (int i=0; i<index; ++i) {
         EPollEx *poll = getPoll(i);
         if (poll && poll->add(ev, NetReactor::NET) == 0) {
+		_info(" post ok1\n");
         /* 
          * 请务必考虑多线程问题；
          * 此ev已被add到reactor中，reactor线程有可能已完成读写和release，

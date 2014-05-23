@@ -146,12 +146,14 @@ void UbEvent::callback()
     if (event & IEvent::IOREADABLE)
     {
 
+    	_debug("get read event\n");
         if ( read_func() <0)
             goto ERROR;
 
     }
     if (event & IEvent::IOWRITEABLE)
     {
+    	_debug("get write event\n");
         if (write_func() <0)
             goto ERROR;
     }
@@ -272,6 +274,8 @@ char * UbEvent :: get_write_buffer(unsigned int size)
 END:
 	if (NULL != retbuf) {
 		sock_data.write_buf_used = size;
+		int t =type();
+		setType(t| IEvent::IOWRITEABLE);
 	} else {
 		setEvents(IEvent::ERROR);
 		//set_sock_status(UbEvent::STATUS_WRITE | UbEvent::STATUS_MEMERROR);
@@ -282,40 +286,48 @@ END:
 
 int UbEvent :: read_buffer_process(int len)
 {
-    sock_data.read_buf_used += len;
     if (sock_data.read_buf_used == sock_data.read_buf_len) {
         if (NULL == get_read_buffer(sock_data.read_buf_len * 2, 1)) {
-        //setResult(IEvent::ERROR);
-        //set_sock_status(UbEvent::STATUS_READ | UbEvent::STATUS_MEMERROR);
-        _err("HttpEvent(http_readheader_process) : get readbuf error\n");
-        return -1;
+        	//setResult(IEvent::ERROR);
+        	//set_sock_status(UbEvent::STATUS_READ | UbEvent::STATUS_MEMERROR);
+        	_err("HttpEvent(http_readheader_process) : get readbuf error\n");
+        	return -1;
         }
     }
      
     if (_io_status == FOR_HEAD)
     {
-        _fbody_length = check_header(sock_data.read_buf,sock_data.read_buf_len);
-        if (_fbody_length >0)
+		_debug("FOR_HEAD\n");
+        _fheader_length = get_head_length(sock_data.read_buf,sock_data.read_buf_used);
+        if (_fheader_length >0)
         {
-
-            if (NULL == get_read_buffer(_fbody_length+_fheader_length + 1, 1)) {
+			_fbody_length = get_body_length(sock_data.read_buf,_fheader_length);
+			if (_fbody_length >0)
+			{
+            	if (NULL == get_read_buffer(_fbody_length+_fheader_length + 1, 1)) {
                     //setResult(IEvent::ERROR);
                     //set_sock_status(UbEvent::STATUS_READ | UbEvent::STATUS_MEMERROR);
                     _err("HttpEvent(body_read) : get readbuf error\n");
                     //event_error_callback();
                 return -1;
-            }
-            _io_status = FOR_BODY;
-            _fbody_readdone = sock_data.read_buf_used - _fheader_length;            
-        }
-    }else{
-    
-        _fbody_readdone = sock_data.read_buf_used - _fheader_length;
-    
-        if (_fbody_readdone >= _fbody_length) {
-            read_done(sock_data.read_buf,_fbody_length);
+            	}
+            	_io_status = FOR_BODY;
+			}	
         }
     }
+	if (_io_status == FOR_BODY)
+	{
+    	_fbody_readdone = sock_data.read_buf_used - _fheader_length;
+        if (_fbody_readdone >= _fbody_length) {
+			_debug("read_done body_read_done=%d\n",_fbody_readdone);
+            read_done(sock_data.read_buf,_fheader_length,_fheader_length+ _fbody_length);
+			sock_data.read_buf_used=0;
+			_fheader_length=0;
+			_fbody_readdone=0;
+			_fbody_length=0;
+			_io_status=FOR_HEAD;
+        }
+	}
 
     return 0;
 }
@@ -330,9 +342,11 @@ int UbEvent::read_func()
     char* _buf = sock_data.read_buf + sock_data.read_buf_used;
     unsigned int len = sock_data.read_buf_len - sock_data.read_buf_used;
     int ret = ::recv(handle(), _buf, len, MSG_DONTWAIT);
+//	_debug("read buf=%s\n,ret=%d",_buf,ret);
 
     if (ret>0)
     {
+    	sock_data.read_buf_used += ret;
         return read_buffer_process(ret);
     }
 
@@ -346,18 +360,21 @@ int UbEvent::read_func()
 
 int UbEvent::write_func()
 {
-    char* _buf = sock_data.write_buf + sock_data.write_buf_used;
-    unsigned int len = sock_data.write_buf_len - sock_data.write_buf_used;
-
+    char* _buf = sock_data.write_buf + sock_data.write_buf_done;
+    unsigned int len = sock_data.write_buf_used - sock_data.write_buf_done;
     //ret = ::write(this->handle(), ((char *)(_buf)) + _readcnt, _cnt - _readcnt);
     int ret = ::send(this->handle(), _buf, len, MSG_DONTWAIT);
 
+	_debug("write_buf=%s\n,ret=%d",_buf,ret);
 
     if (ret > 0)
     {
-        sock_data.read_buf_used += ret;
-        if (sock_data.read_buf_used>=sock_data.read_buf_len)
+        sock_data.write_buf_done += ret;
+        if (sock_data.write_buf_done>=sock_data.write_buf_used){
+			int t = type();	
+			setType(t & ~IEvent::IOWRITEABLE);
             write_done();
+		}
 
         return 0;
     }

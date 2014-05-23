@@ -1,5 +1,5 @@
 all:
-	g++ *.cpp *.h 
+	g++ *.cpp *.h -lpthread 
 
 clean:
 	rm *.o -rf

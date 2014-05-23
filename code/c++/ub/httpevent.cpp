@@ -62,7 +62,7 @@ static char * http_find_field_nocase(char *src, int reallen, const char *dest,in
 				return mh;
 			}
 		}
-		_debug("http_find_field_nocase: srcstr:%s\n", srcstr);
+		//_debug("http_find_field_nocase: srcstr:%s\n", srcstr);
 		bound_check = srcstr + strlen(G_HTTP_CRLF) - src;
 		if (bound_check >= reallen) {
 			return NULL;
@@ -77,17 +77,23 @@ static char * http_find_field_nocase(char *src, int reallen, const char *dest,in
 	}
 	return NULL;
 }
-int HttpEvent::check_header(char * buf,int len)
+int HttpEvent::get_head_length(char * buf,int len)
 {
     int head_len = http_find_crlfcrlf(buf,len);
     if (head_len >0){
-        read_head_done(buf,head_len);
-        int body_len = get_content_length(buf,head_len);
-        return body_len;
+		return head_len;
     }
     return -1;
 }
+int HttpEvent::get_body_length(char *buf,int len)
+{
 
+	int body_len = get_content_length(buf,len);
+    if (body_len>0)
+		return body_len;
+	else
+		return -1;
+}
 int HttpEvent::http_find_crlfcrlf(char * buf,int len) {
 	int length = len -3;
 	if (0 > len) {
