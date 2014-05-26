@@ -24,7 +24,7 @@ public:
     virtual int get_body_length(char * buf,int len);
 
     virtual int read_head_done(char * buf,int len){};
-    virtual int read_done(char * buf,int head_len,int body_len){};
+    virtual int read_done(char * buf,int len){};
     virtual int write_done(){};
     virtual void error_handle(){};
 

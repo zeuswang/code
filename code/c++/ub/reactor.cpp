@@ -155,7 +155,7 @@ int EPollEx::checker(int to, timeval &tv)
             }
             } else if (ev->isTimeout()) {
                 bcb = true;
-                ev->setResult(IEvent::TIMEOUT);
+                ev->setEvents( ev->events() |IEvent::TIMEOUT);
                 ev->setStatus(IEvent::ERROR);
                 if (this->del(ev) != 0) {
                     int err = errno;
@@ -205,7 +205,7 @@ int EPollEx::add(IEvent *iev, int itype)
 		//EVENT_WARNING(iev, 0, "no", "Calling netreactor::post(event, type) failed, beacause the param type != IReactor::NET");
 		return -1;
 	}
-	_debug("add event to EPoll\n");
+	//_debug("add event to EPoll\n");
 	struct epoll_event ev;
 	ev.data.ptr = iev;
 	ev.events = EPOLLHUP | EPOLLERR;
@@ -461,7 +461,6 @@ EPollEx *NetReactor::getPoll(int pos)
 
 int NetReactor::post(IEvent *ev)
 {
-	_debug("xxxxxxx\n");
 	if (ev == NULL) {
 		_err("Calling NetReactor::post(event, type) failed, beacause the param event == NULL\n");
 		return -1;
@@ -490,14 +489,14 @@ int NetReactor::post(IEvent *ev)
         if (poll && poll->add(ev, NetReactor::NET) == 0) {
 
 
-      _info(" post ok\n");
+      	//_info(" post ok\n");
             return 0;
         }
     }
 	for (int i=0; i<index; ++i) {
         EPollEx *poll = getPoll(i);
         if (poll && poll->add(ev, NetReactor::NET) == 0) {
-		_info(" post ok1\n");
+		//_info(" post ok1\n");
         /* 
          * 请务必考虑多线程问题；
          * 此ev已被add到reactor中，reactor线程有可能已完成读写和release，

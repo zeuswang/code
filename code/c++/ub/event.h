@@ -65,6 +65,7 @@ public:
 	};
     UbEvent():_fheader_length(0), _fbody_length(0), _fbody_readdone(0),_io_status(0){
         _ref=0;
+		_tv = 1000;
 		setType(IEvent::IOREADABLE);
         //sock_data.event = this;
         sock_data.read_buf = sock_data.small_readbuf;
@@ -86,6 +87,7 @@ public:
     ~UbEvent();
 
 public:
+
     int post();
     void finish();
     char* get_write_buffer(unsigned int size);
@@ -97,8 +99,8 @@ public:
     virtual int get_head_length(char * buf,int  len){return 0;};
     virtual int get_body_length(char * buf,int  len){return 0;};
 
-    virtual int read_head_done(char * buf,int len,int len2){return 0;};
-    virtual int read_done(char * buf,int len,int len2){return 0;};
+    virtual int read_head_done(char * buf,int len){return 0;};
+    virtual int read_done(char * buf,int len){return 0;};
 
     virtual int write_done(){return 0;};
     virtual void error_handle(){};

@@ -7,15 +7,8 @@
  **/
 #include "reactor.h"
 
-#ifndef  __UB_IEVENT_H_
-#define  __UB_IEVENT_H_
-/*
-#include <new>
-
-#include "ubinlog.h"
-#include "ubutils.h"
-#include "bsl/pool.h"
-*/
+#ifndef  __IEVENT_H_
+#define  __IEVENT_H_
 namespace ub
 {
 	class NetReactor;

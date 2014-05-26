@@ -142,7 +142,7 @@ int  HttpEvent::get_content_length(char * buf,int len) {
 		goto NOLENGTH;
 	}
 	*line = '\r';
-	_debug("HttpEvent(http_get_contentlength): set body length(%lld)\n", num);
+	//_debug("HttpEvent(http_get_contentlength): set body length(%lld)\n", num);
 
 	return num;
 NOLENGTH:
