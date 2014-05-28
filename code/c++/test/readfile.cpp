@@ -39,7 +39,7 @@ static void *init_function(void* arg)
             uint32_t start = info->func(info->args,handle_buffer,0,sum);
             if (start>0)
             {
-                start ++;
+				start ++;
                 strncpy(handle_buffer,&handle_buffer[start],sum - start);
                 sum=sum - start;
                 strncpy(&handle_buffer[sum],buffer,ret);
