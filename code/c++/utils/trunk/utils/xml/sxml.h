@@ -3,6 +3,7 @@
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
 #include <string>
+#include <string.h>
 
 int utf16_to_utf8(const std::string &src, std::string &result);
 int utf8_to_utf16(const std::string &src, std::string &result);

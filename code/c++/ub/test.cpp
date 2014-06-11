@@ -54,8 +54,8 @@ int main()
 	reactor->Activate();
     clienthttpevent * httpEvent = new clienthttpevent();
     char *reqbuf = (char *)httpEvent->get_write_buffer(1000);
-    //int ret = snprintf(reqbuf, 1000, "%s", "GET / HTTP/1.1\n\n");
-    int ret = snprintf(reqbuf, 1000, "%s", "GET / \n\n");
+    int ret = snprintf(reqbuf, 1000, "%s", "GET / HTTP/1.1\n\n");
+    //int ret = snprintf(reqbuf, 1000, "%s", "GET / \n\n");
     httpEvent->get_write_buffer(ret);
 
     int sockfd = socket(PF_INET, SOCK_STREAM, 0);
@@ -66,16 +66,19 @@ int main()
             httpEvent->setReactor(reactor);
             struct sockaddr_in server_addr ;
             server_addr.sin_family = AF_INET;
-            server_addr.sin_addr.s_addr =  inet_addr("61.55.167.120");
-            //server_addr.sin_addr.s_addr =  inet_addr("115.239.211.110");
+            //server_addr.sin_addr.s_addr =  inet_addr("61.55.167.120");
+            server_addr.sin_addr.s_addr =  inet_addr("115.239.211.110");
             server_addr.sin_port = htons(80);
+			__set_fd_nonblock(sockfd);				
             if (connect(sockfd, (struct sockaddr*)&server_addr, sizeof(server_addr)) >= 0)
             {
-				printf(" connect ok\n");
+				/*printf(" connect ok\n");
 				__set_fd_nonblock(sockfd);				
                 httpEvent->setHandle(sockfd);
-                httpEvent->post();
+                httpEvent->post();*/
             }
+          	httpEvent->setHandle(sockfd);
+            httpEvent->post();
 
 
     }
