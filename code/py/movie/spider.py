@@ -34,16 +34,9 @@ def get_tag(url):
 	return None
 
 def dump_result(file):
-	index=0
 	fp = io.open(file,"a")
-	if len(result_list) > 10000:
-		index=10000
-	else:
-		index=len(result_list)
-	for i in range(1,index):
-		link= result_list.pop()
+	for link in result_list:
 		fp.write((link+"\n").decode("UTF-8"))
-
 		fp.flush()
 	fp.close()
 
@@ -60,17 +53,14 @@ for target_url in open(target_file,'r'):
 	spider_list.append(target_url)
 	print result_file
 	#continue
-	num=1
+	num=0
 	while (len(spider_list)>0):
 		target_url =spider_list.pop()
 		res=urllib.urlopen(target_url).read()
 		#parse_page(res)
 		parser.dir_parse(res,spider_list,result_list)
-		if len(result_list)> 10:
-			dump_result('%s_%05d' % (result_file,num))
 		num+=1
 		time.sleep(1)
-	if len(result_list)>0:		
-		dump_result('%s_%05d' % (result_file,num))
+	dump_result('%s_%05d' % (result_file,num))
 
 

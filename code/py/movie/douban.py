@@ -1,6 +1,5 @@
 # coding=utf8
 import time
-import base
 import StringIO
 from pyquery import PyQuery as pyq  
 from lxml import etree
