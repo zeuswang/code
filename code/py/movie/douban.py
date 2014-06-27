@@ -9,6 +9,15 @@ result_list_num = 10
 class DoubanParser(parse.PageParser):
 	def dir_parse(self,page,spider_list,result_list):
 		#print page
+		doc = pyq(page)
+		tmp = doc('div[class=article]')
+		tl = tmp('table')
+		print len(tl)
+		for t in tl:
+			a = pyq(t)('a[class=nbg]')
+			print a.attr("href")
+
+		return 	
 		parser = etree.HTMLParser(recover=True)
 		tree=etree.parse(StringIO.StringIO(page),parser)
 		node=tree.xpath('//*[contains(@class,\'article\')]')
@@ -44,10 +53,11 @@ class DoubanParser(parse.PageParser):
 			if idx >0 and idx2 >0:
 				it.location = info[idx +len("制片国家/地区:"):idx2]
 #				print location
-			idx = str(info).find("类型:")
-			idx2 = str(info).find("官方网站")
-			if idx >0 and idx2 >0:
-				it.type = info[idx +len("类型:"):idx2]
+
+			tl = pyq(v)('span[property=\'v:genre\']')
+			for t in tl:
+				it.type += '/' +pyq(t).text().encode("UTF-8")
+
 
 			idx = str(info).find("编剧")
 			idx2 = str(info).find("主演")
