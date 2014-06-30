@@ -1,11 +1,18 @@
-#!/bin/sh
 year=$1
+year2=$2
 url_dir="/data/wangwei/movie/spider/url/"
 res_dir="/data/wangwei/movie/spider/result/douban/"
-if [ ! -d ${res_dir}${year}/ ]
-then
-	mkdir ${res_dir}${year}
-fi
-nohup python detail.py ${url_dir}${year}/ ${res_dir}${year}/ > doubani_detial_${year}.log &
+i=1989
+while [ $i -le 2008 ]
+do
+	echo $i
+	if [ ! -d ${res_dir}${i}/ ]
+	then
+		mkdir ${res_dir}${i}
+	fi
+
+	python detail.py ${url_dir}${i}/ ${res_dir}${i}/ 1 > doubani_detial_${i}.log 2>&1
+	i=$((i+1))
+done
 
 

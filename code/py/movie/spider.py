@@ -61,6 +61,7 @@ for target_url in open(target_file,'r'):
 		parser.dir_parse(res,spider_list,result_list)
 		num+=1
 		time.sleep(1)
-	dump_result('%s_%05d' % (result_file,num))
+		dump_result('%s_%05d' % (result_file,num))
+		result_list=[]
 
 

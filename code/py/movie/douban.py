@@ -9,6 +9,7 @@ result_list_num = 10
 class DoubanParser(parse.PageParser):
 	def dir_parse(self,page,spider_list,result_list):
 		#print page
+		"""
 		doc = pyq(page)
 		tmp = doc('div[class=article]')
 		tl = tmp('table')
@@ -18,6 +19,7 @@ class DoubanParser(parse.PageParser):
 			print a.attr("href")
 
 		return 	
+		"""
 		parser = etree.HTMLParser(recover=True)
 		tree=etree.parse(StringIO.StringIO(page),parser)
 		node=tree.xpath('//*[contains(@class,\'article\')]')
