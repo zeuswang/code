@@ -61,7 +61,7 @@ for name in folders:
 			res=urllib.urlopen(target_url).read()
 			it = item.Item()
 			parse_page(res,it)
-			res_fp.write('%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' % (it.cname,it.ename,it.actors,it.director,it.writer,it.location,it.type,it.date,it.runtime,it.rate,it.votes))
+			res_fp.write('%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\3%s\n' % (it.cname,it.ename,it.actors,it.director,it.writer,it.location,it.type,it.date,it.runtime,it.rate,it.votes,it.pic_url,it.aname,it.imdb_link,it.comment_link,it.summary,url))
 			res_fp.flush()
 			time.sleep(3)
 		

@@ -66,6 +66,12 @@ class DoubanParser(parse.PageParser):
 			if idx >0 and idx2 >0:
 				it.writer = info[idx +len("编剧"):idx2]
 
+			idx = str(info).find("又名")
+			idx2 = str(info).find("IMDb")
+			if idx >0 and idx2 >0:
+				it.aname = info[idx +len("又名") +1 :idx2]
+				#print it.aname
+
 			runtv = pyq(v)('span[property=\'v:runtime\']')
 			if runtv is not None:
 				it.runtime = runtv.text().encode("UTF-8")
@@ -80,15 +86,43 @@ class DoubanParser(parse.PageParser):
 			st = pyq(v)('span[property=\'v:initialReleaseDate\']')
 			if st is not None:
 				it.date = st.text().encode("UTF-8")
+			
+			al= pyq(v)('a[rel=\'nofollow\']')
+			for a in al:
+				name= pyq(a).attr('href')
+				index =  str(name).find('imdb') 
+				if index >=0:
+					it.imdb_link = name
+					#print it.imdb_link
 
-		rate = pyq(page)('strong[property=\'v:average\']')
+
+		imgdiv = doc('div[id=mainpic]')
+		img = imgdiv('img[rel=\'v:image\']')
+		if img is not None:
+			it.pic_url = img.attr('src')
+			#print it.pic_url
+
+		smy = doc('span[property=\'v:summary\']')
+		if smy is not None:
+			it.summary = smy.text().encode("UTF-8")
+			#print it.summary
+
+		smy = doc('div[id=review_section]')
+		if smy is not None:
+			tt = smy('div').eq(1)
+			aa = tt('h2')('a')	
+			if aa is not None:
+				it.comment_link=aa.attr('href')
+				print it.comment_link
+
+		rate = doc('strong[property=\'v:average\']')
 		if rate is not None:
 			it.rate = rate.text().encode("UTF-8")
-		votes = pyq(page)('span[property=\'v:votes\']')
+		votes = doc('span[property=\'v:votes\']')
 		if votes is not None:
 			it.votes = votes.text().encode("UTF-8")
 
-		namestr = pyq(page)('meta[name=\'keywords\']')
+		namestr = doc('meta[name=\'keywords\']')
 		if len(namestr)>0:
 			s = namestr.attr('content').encode("UTF-8").split(",")	
 			it.cname= s[0]
