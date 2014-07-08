@@ -89,8 +89,8 @@ class DoubanParser(parse.PageParser):
 			
 			al= pyq(v)('a[rel=\'nofollow\']')
 			for a in al:
-				name= pyq(a).attr('href')
-				index =  str(name).find('imdb') 
+				name= pyq(a).attr('href').encode("UTF-8")
+				index =  str(name).find("imdb") 
 				if index >=0:
 					it.imdb_link = name
 					#print it.imdb_link
