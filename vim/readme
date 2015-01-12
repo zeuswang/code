@@ -17,7 +17,7 @@ Vim
 注意：这样配置好之后呢，在gvim下是可以完美显示的，但是终端下使用vim的时候，颜色还是很糟糕的。与预期不符。那是因为终端默认不支持256色。
 
 
-vim .barshrc 并添加 
+别忘了 修改 .bashrc 文件 vim .bashrc 并添加 
 
 export TERM=xterm-256color
 
@@ -25,28 +25,6 @@ export TERM=xterm-256color
 
  
 --------------------------------------------------------------------------------------
-Terminal
-
-终端Terminal 也可以这样配。
-
-首先安装 git：sudo apt-get install git-core
-
-然后要设一下 solarized theme for GNU ls，不然在 Terminal 下 ls 啥的都灰蒙蒙的，就是给Solarized增加了目录ls的颜色功能：
-
-git clone git://github.com/seebi/dircolors-solarized.git
-dircolor-solarized 有几个配色，你可以去项目那看看说明，我还是选择深色系 dark256：
-
-cp ~/dircolors-solarized/dircolors.256dark ~/.dircolors
-eval 'dircolors .dircolors'
-
-
-设置 Terminal 支持 256 色，vim .barshrc 并添加 export TERM=xterm-256color（原因上面已经提到）。
-
-接下来下载 Solarized 的 Gnome-Terminal 配色：
-
-git clone git://github.com/sigurdga/gnome-terminal-colors-solarized.git
-cd gnome-terminal-colors-solarized 到该目录下运行配色脚本：
-
-./set_dark.sh 或./set_light.sh，可以自由切换深色和浅色。
-
-或者./solarize 也可切换，比如执行一次是dark，再一次变light。如此交替。
+目录颜色
+在mac 电脑的终端中，配置成solarized 主题之后，目录的颜色就回有问题
+需要cp 目录主题颜色
