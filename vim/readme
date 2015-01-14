@@ -28,3 +28,12 @@ export TERM=xterm-256color
 目录颜色
 在mac 电脑的终端中，配置成solarized 主题之后，目录的颜色就回有问题
 需要cp 目录主题颜色
+
+-------------------------------------------------------------------------------------
+已经安装的插件
+pyflakes         python自动语法检查的插件，好用的
+pydiction        python自动补全的插件，如果需要添加自己写的module，请看他的README
+ctags            这个需要重新安装一下,进入 ctags的目录 ./configure;make;make install
+taglist          只有ctags 安装好之后，taglist 才能生效
+nerdtree_plugin  在vim里显示目录tree的插件，很好用
+
