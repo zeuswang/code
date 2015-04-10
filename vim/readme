@@ -36,4 +36,4 @@ pydiction        python自动补全的插件，如果需要添加自己写的mod
 ctags            这个需要重新安装一下,进入 ctags的目录 ./configure;make;make install
 taglist          只有ctags 安装好之后，taglist 才能生效
 nerdtree_plugin  在vim里显示目录tree的插件，很好用
-
+ctrlp            搜索和查找已经打开过的文件，非常好用，我配置的快捷键是ctrl+o,搜索文件,ctrl+b 查看已经打开过的文件
