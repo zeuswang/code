@@ -18,11 +18,13 @@ highlight clear LineNr
 let g:pydiction_menu_height = 3 
 let g:pydiction_location = '~/.vim/pydiction/complete-dict' 
 
-"mini buffer
-let g:miniBufExplMapWindowNavVim = 1 
-let g:miniBufExplMapWindowNavArrows = 1 
-let g:miniBufExplMapCTabSwitchBufs = 1 
-let g:miniBufExplModSelTarget = 1 
+"ctrlp
+let g:ctrlp_working_path_mode = 'ra'
+let g:ctrlp_map = '<c-o>'
+let g:ctrlp_cmd = 'CtrlP'
+
+map <c-b> :CtrlPBuffer<CR>
+
 "let g:Powerline_symbols='fancy'
 "set nu
 "set linespace=0
